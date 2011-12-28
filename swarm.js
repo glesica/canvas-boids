@@ -10,19 +10,17 @@ AVOIDANCE = 0.5;
 VISIBLE_RANGE = 50;
 
 
-function Boid(x, y, h, s) {
+function Boid(x, y, d, m) {
     this.x = x;
     this.y = y;
-    this.velocity = {direction: d, magnitude: s};
-    
-    /*this.separationHeading = null;
-    this.alignmentHeading = null;
-    this.cohesionHeading = null;
-    this.avoidanceHeading = null;*/
-    
-    this.nextX = null;
-    this.nextY = null;
-    this.nextVelocity = null;
+    this.velocity = {
+        direction: d, 
+        magnitude: m
+    };
+    this.nextVelocity = {
+        direction: d, 
+        magnitude: m
+    };
 }
 Boid.prototype.draw = function(ctx) {
     ctx.beginPath();
@@ -36,17 +34,15 @@ Boid.prototype.draw = function(ctx) {
 Boid.prototype.distanceTo = function(pos) {
     return Math.sqrt(Math.pow(pos.x - this.x, 2) + Math.pow(pos.y - this.y, 2));
 }
-Boid.prototype.averageDistanceTo = function(bs) {
+/**
+    Returns the average distance from the target boid 
+    to each position in `poss`. Each position can be 
+    any object with `x` and `y` properties.
+*/
+Boid.prototype.distanceToAverage = function(poss) {
     return bs.reduce(function(prev, next) {
-        return prev + this.distanceFrom(next);
-    }, null) / bs.length;
-}
-Boid.prototype.closeTo = function(b, d) {
-    if (this === b) {
-        return false;
-    } else {
-        return (this.distanceFrom(b) <= d);
-    }
+        return prev + this.distanceTo(next);
+    }, null) / poss.length;
 }
 /**
     Returns the angle from the target boid to `pos` where 
@@ -64,6 +60,20 @@ Boid.prototype.vectorTo = function(pos) {
         direction: this.angleTo(pos),
         magnitude: this.distanceTo(pos)
     }
+}
+/**
+    Adds the given velocity vector, `vel`, to the current 
+    "next" velocity of the target boid.
+*/
+Boid.prototype.updateVelocity = function(vel) {
+    var current = this.nextVelocity;
+    currentX = Math.cos(current.direction) * current.magnitude;
+    currentY = Math.sin(current.direction) * current.magnitude;
+    
+    addX = Math.cos(vel.direction) * vel.magnitude;
+    addY = Math.cos(vel.direction) * vel.magnitude;
+    
+    
 }
 
 
@@ -97,7 +107,7 @@ Swarm.prototype.update = function() {
         /*
             Cohesion Heading
         */
-        var cohesionHeading = null;
+        var cohesionVelocity = null;
         if (nearest.length) {
             var sumPos = nearest.reduce(
                 function(prev, next) {
@@ -111,7 +121,11 @@ Swarm.prototype.update = function() {
                 x: sumPos.x / nearest.length,
                 y: sumPos.y / nearest.length
             }
-            cohesionHeading = boid.vectorTo(avgPos);
+            var rawVelocity = boid.vectorTo(avgPos);
+            cohesionVelocity = {
+                direction: rawVelocity.direction,
+                magnitude: rawVelocity.magnitude * COHESION
+            }
         }
         
         
