@@ -1,0 +1,109 @@
+<!doctype html>
+
+<html>
+<head>
+    <style type="text/css">
+    canvas { border: 1px solid black; }
+    </style>
+    <script type="text/javascript" src="swarm.js"></script>
+    <script type="text/javascript">
+    function draw() {
+        var ctx = document.getElementById('canvas').getContext('2d');
+        
+        run(ctx);
+    }
+    
+    
+    /**
+    Returns a list of indexes pointing to boids in `swarm` that 
+    are considered "neighbors" to the boid referenced by `index`.
+    */
+    function neighbors(swarm, index) {
+        
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    function updatePositions(ctx, dots) {
+        var newdots = [];
+        dots.forEach(function(dot) {
+            var neighbors = dots.filter(function(other) {
+                var dx = other.x - dot.x;
+                var dy = other.y - dot.y;
+                return (Math.sqrt(dx^2 + dy^2) < SEARCH_RADIUS) && other !== dot;
+            });
+            var vx = 0, vy = 0;
+            neighbors.forEach(function(neighbor) {
+                vx += neighbor.x - dot.x;
+                vy += neighbor.y - dot.y;
+            });
+            var magnitude = Math.sqrt(vx^2 + vy^2);
+            newdots.push({
+                x: (dot.x + vx / magnitude) * SPEED,
+                y: (dot.y + vy / magnitude) * SPEED
+            })
+        });
+        return newdots;
+    }
+    
+    function drawDots(ctx, dots) {
+        for (var i in dots) {
+            drawFilledDot(ctx, dots[i].x, dots[i].y, DOT_RADIUS);
+        }
+    }
+    
+    function animateSnowflake() {
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        initial = initial + Math.PI / 32;
+        drawSnowFlake(ctx, 8, initial);
+    }
+    
+    function drawSnowFlake(ctx, n, t) {
+        ctx.save();
+        ctx.translate(canvas.width/2,canvas.height/2);
+        ctx.rotate(t);
+        
+        for (var i=0; i<n; i++) {
+            ctx.save();
+            ctx.rotate(Math.PI * 2 * i / n); // Rotate 1/6 of a circle
+            ctx.fillStyle = getColor(30*i, 255-30*i, 255);
+            
+            for (var j=1; j<=4; j++) {
+                drawFilledDot(ctx, 0, 15*j, 5);
+            }
+            
+            ctx.restore();
+        }
+        
+        ctx.restore();
+    }
+    
+    function drawDot(ctx, x, y, r) {
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI*2);
+    }
+    
+    function drawStrokedDot(ctx, x, y, r) {
+        drawDot(ctx, x, y, r);
+        ctx.stroke();
+    }
+    
+    function drawFilledDot(ctx, x, y, r) {
+        drawDot(ctx, x, y, r);
+        ctx.fill();
+    }
+    
+    function getColor(r, g, b) {
+        return 'rgb(' + r + ',' + g + ',' + b + ')';
+    }
+    </script>
+</head>
+<body onLoad="draw();">
+    <canvas id="canvas" width="300" height="300"></canvas>
+</body>
+</html>
