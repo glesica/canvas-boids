@@ -295,7 +295,7 @@ Swarm.prototype.advance = function() {
 function run(canvasID) {
     var ctx = document.getElementById(canvasID).getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = 'rgb(200, 50, 200)';
+    ctx.fillStyle = 'rgb(248,234,28)';
     ctx.translate(0, canvas.height);
     ctx.scale(1, -1);
     

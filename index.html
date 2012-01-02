@@ -3,18 +3,121 @@
 <html>
 <head>
     <style type="text/css">
-    canvas { border: 1px solid black; }
+    body {
+        font-family: sans-serif;
+        margin: 16px;
+        padding: 0;
+    }
+    canvas {
+        background: #272119;
+    }
+    label, input {
+        display: block;
+    }
+    #controls {
+        border: 1px solid #272119;
+        display: inline-block;
+        margin-right: 16px;
+        padding: 16px;
+    }
+    #display {
+        border: 1px solid #272119;
+        display: inline-block;
+        vertical-align: top;
+        padding: 16px;
+    }
     </style>
     <script type="text/javascript" src="swarm.js"></script>
     <script type="text/javascript" src="tests.js"></script>
+    <script type="text/javascript" src="lib/jquery-1.7.1.min.js"></script>
     <script type="text/javascript">
-    function draw() {
-        var ctx = document.getElementById('canvas').getContext('2d');
-        run(ctx);
-    }
+    $(function() {
+        // Bind events
+        $('#go-stop')
+        .click(function() {
+            RUNNING = ! RUNNING;
+            if (RUNNING == true) {
+                run('canvas');
+                $(this).html('Stop');
+            } else {
+                $(this).html('Go');
+            }
+        });
+        
+        $('#number-boids')
+        .val(BOID_COUNT)
+        .change(function() {
+            BOID_COUNT = $(this).val();
+        });
+        
+        $('#separation')
+        .val(SEPARATION)
+        .change(function() {
+            SEPARATION = $(this).val();
+        });
+        
+        $('#separation-dist')
+        .val(SEPARATION_DISTANCE)
+        .change(function() {
+            SEPARATION_DISTANCE = $(this).val();
+        });
+        
+        $('#cohesion')
+        .val(COHESION)
+        .change(function() {
+            COHESION = $(this).val();
+        });
+        
+        $('#alignment')
+        .val(ALIGNMENT)
+        .change(function() {
+            ALIGNMENT = $(this).val();
+        });
+        
+        $('#avoidance')
+        .val(AVOIDANCE)
+        .change(function() {
+            AVOIDANCE = $(this).val();
+        });
+        
+        $('#visibility')
+        .val(VISIBILITY)
+        .change(function() {
+            VISIBILITY = $(this).val();
+        });
+    });
     </script>
 </head>
-<body onLoad="draw();">
-    <canvas id="canvas" width="600" height="300"></canvas>
+<body>
+    <h1>Canvas Boids</h1>
+    
+    <div id="controls">
+        <label for="number-boids">Number of Boids</label>
+        <input type="text" name="number-boids" id="number-boids" />
+        
+        <label for="separation">Separation</label>
+        <input type="text" name="separation" id="separation" />
+        
+        <label for="separation-dist">Separation Distance</label>
+        <input type="text" name="separation-dist" id="separation-dist" />
+        
+        <label for="cohesion">Cohesion</label>
+        <input type="text" name="cohesion" id="cohesion" />
+        
+        <label for="alignment">Alignment</label>
+        <input type="text" name="alignment" id="alignment" />
+        
+        <label for="avoidance">Avoidance</label>
+        <input type="text" name="avoidance" id="avoidance" />
+        
+        <label for="visibility">Visibility</label>
+        <input type="text" name="visibility" id="visibility" />
+        
+        <button id="go-stop">Go</button>
+    </div>
+    
+    <div id="display">
+        <canvas id="canvas" width="600" height="300"></canvas>
+    </div>
 </body>
 </html>
