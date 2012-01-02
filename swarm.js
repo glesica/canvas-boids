@@ -1,15 +1,16 @@
 BOID_RADIUS = 3;
 SHOW_BOID_HEADING = false;
-BOID_COUNT = 100;
-MAX_SPEED = 5;
+BOID_COUNT = 150;
+MAX_SPEED = 10;
 RUNNING = false;
+ADJUSTMENT_MULTIPLIER = 0.1;
 
 SEPARATION = 1.0;
-SEPARATION_DISTANCE = 10;
+SEPARATION_DISTANCE = 15;
 ALIGNMENT = 1.0;
 COHESION = 0.2;
 AVOIDANCE = 1.0;
-VISIBILITY = 100;
+VISIBILITY = 50;
 
 DEBUG = true;
 DEBUG_COUNT = 0;
@@ -176,7 +177,7 @@ Boid.prototype.adjustHeading = function(vec) {
     // Limit magnitude of adjustment vectors to avoid crazy course changes
     // TODO: Shouldn't mutate vectors
     if (vec.magnitude > MAX_SPEED) {
-        vec.magnitude = MAX_SPEED;
+        vec.magnitude = MAX_SPEED * ADJUSTMENT_MULTIPLIER;
     }
     this.adjustments.push(vec.copyOf());
 };
