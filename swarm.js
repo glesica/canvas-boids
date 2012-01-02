@@ -2,6 +2,7 @@ BOID_RADIUS = 3;
 SHOW_BOID_HEADING = false;
 BOID_COUNT = 100;
 MAX_SPEED = 5;
+RUNNING = false;
 
 SEPARATION = 1.0;
 SEPARATION_DISTANCE = 10;
@@ -291,27 +292,51 @@ Swarm.prototype.advance = function() {
 };
 
 
-function run(ctx) {
-    var swarm = new Swarm(BOID_COUNT);
+function run(canvasID) {
+    var ctx = document.getElementById(canvasID).getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = 'rgb(200, 50, 200)';
     ctx.translate(0, canvas.height);
     ctx.scale(1, -1);
     
-    requestAnimationFrame = window.requestAnimationFrame || 
-                            window.mozRequestAnimationFrame ||
-                            window.webkitRequestAnimationFrame || 
-                            window.msRequestAnimationFrame;
-    var start = Date.now();
+    var swarm = new Swarm(BOID_COUNT);
+    
+    window.requestAnimFrame = (function() {
+        return window.requestAnimationFrame || 
+                window.webkitRequestAnimationFrame || 
+                window.mozRequestAnimationFrame || 
+                window.oRequestAnimationFrame || 
+                window.msRequestAnimationFrame || 
+                function(callback, element) {
+                    window.setTimeout(callback, 1000 / 60);
+                };
+    })();
 
-    function step(timestamp) {
-        var progress = timestamp - start;
-        swarm.run(ctx);
-        if (progress < 20000) {
-            requestAnimationFrame(step);
+    var startTime = undefined;
+    
+    function animate(time) {
+        if (time === undefined) {
+            time = Date.now();
         }
-    }
-    requestAnimationFrame(step);
-}
+        if (startTime === undefined) {
+            startTime = time;
+        }
+        swarm.run(ctx);
+    };
+    
+    function stop() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    };
+
+    (function animloop(){
+        if (RUNNING === true) {
+            animate();
+            requestAnimFrame(animloop);
+        } else {
+            stop();
+        }
+    })();   
+};
 
 
 
