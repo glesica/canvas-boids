@@ -139,7 +139,7 @@ Boid.randomBoid = function(mx, my, mhm) {
     return new Boid(position, heading);
 };
 // Draws the boid on the given graphics context.
-Boid.prototype.draw = function(ctx) {
+Boid.prototype.draw = function() {
     var pt = this.position.asCartesian();
     var tar = this.position.addVector(this.heading.scaledBy(5)).asCartesian();
     // Draw the direction vector
@@ -193,15 +193,15 @@ function Swarm(n) {
         this.boids.push(Boid.randomBoid(this.width, this.height, MAX_SPEED));
     }
 };
-Swarm.prototype.run = function(ctx) {
+Swarm.prototype.run = function() {
     ctx.clearRect(0,0,canvas.width,canvas.height);
-    this.drawAll(ctx);
+    this.drawAll();
     this.advance();
     this.flipAll();
 };
-Swarm.prototype.drawAll = function(ctx) {
+Swarm.prototype.drawAll = function() {
     for (var i=0; i<this.boids.length; i++) {
-        this.boids[i].draw(ctx);
+        this.boids[i].draw();
     }
 };
 Swarm.prototype.flipAll = function() {
@@ -294,7 +294,8 @@ Swarm.prototype.advance = function() {
 
 
 function run(canvasID) {
-    var ctx = document.getElementById(canvasID).getContext('2d');
+    canvas = document.getElementById(canvasID);
+    ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = 'rgb(248,234,28)';
     ctx.translate(0, canvas.height);
@@ -322,7 +323,7 @@ function run(canvasID) {
         if (startTime === undefined) {
             startTime = time;
         }
-        swarm.run(ctx);
+        swarm.run();
     };
     
     function stop() {
