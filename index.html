@@ -8,23 +8,34 @@
         margin: 16px;
         padding: 0;
     }
+    dt {
+        font-weight: bold;
+    }
     canvas {
         background: #272119;
     }
-    label, input {
+    label {
         display: block;
+    }
+    input {
+        border: 1px #272119 solid;
+        padding: 4px;
     }
     #controls {
         border: 1px solid #272119;
+        box-shadow: 1px 1px 2px #272119;
         display: inline-block;
+        margin-bottom: 16px;
         margin-right: 16px;
         padding: 16px;
     }
     #display {
         border: 1px solid #272119;
+        box-shadow: 1px 1px 2px #272119;
         display: inline-block;
-        vertical-align: top;
+        margin-bottom: 16px;
         padding: 16px;
+        vertical-align: top;
     }
     </style>
     <script type="text/javascript" src="swarm.js"></script>
@@ -113,11 +124,33 @@
         <label for="visibility">Visibility</label>
         <input type="text" name="visibility" id="visibility" />
         
-        <button id="go-stop">Go</button>
+        <br /><button id="go-stop">Go</button>
     </div>
     
     <div id="display">
         <canvas id="canvas" width="600" height="300"></canvas>
     </div>
+    
+    <h2>Parameters</h2>
+    <p>Experiment with the controls to create different simulation 
+    results.</p>
+    <dl>
+        <dt>Number of Boids</dt>
+        <dd>This is the number of little dots that will participate in the 
+        simulation. <strong>Note:</strong> setting this number too 
+        high can slow things to a crawl.</dd>
+        <dt>Separation</dt>
+        <dd>How hard the boids try not to hit one another.</dd>
+        <dt>Separation Distance</dt>
+        <dd>The distance the boids try to maintain from one another.</dd>
+        <dt>Cohesion</dt>
+        <dd>How hard the boids try to group together.</dd>
+        <dt>Alignment</dt>
+        <dd>How conformist the boids are, moving in the same direction.</dd>
+        <dt>Avoidance</dt>
+        <dd>How hard the boids try to stay within the window.</dd>
+        <dt>Visibility</dt>
+        <dd>How far the boids can "see" around them.</dd>
+    </dl>
 </body>
 </html>
