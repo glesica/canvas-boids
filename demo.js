@@ -1,4 +1,19 @@
 $(function() {
+    var c = $('#canvas').get(0);
+    
+    $(window).resize(function() {
+        c.height = document.documentElement.clientHeight;
+        c.width = document.documentElement.clientWidth;
+    })
+    .resize();
+    
+    $('#controls input')
+    .tooltipsy({
+        offset: [1,0],
+        showEvent: 'focus',
+        hideEvent: 'blur'
+    });
+
     // Bind events
     $('#go-stop')
     .click(function() {

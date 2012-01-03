@@ -2,63 +2,59 @@
 
 <html>
 <head>
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="demo.css" />
     <script type="text/javascript" src="swarm.js"></script>
     <script type="text/javascript" src="lib/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript" src="lib/tooltipsy.min.js"></script>
     <script type="text/javascript" src="demo.js"></script>
 </head>
 <body>
-    <h1>Canvas Boids</h1>
-    
-    <div id="controls">
-        <label for="number-boids">Number of Boids</label>
-        <input type="text" name="number-boids" id="number-boids" />
-        
-        <label for="separation">Separation</label>
-        <input type="text" name="separation" id="separation" />
-        
-        <label for="separation-dist">Separation Distance</label>
-        <input type="text" name="separation-dist" id="separation-dist" />
-        
-        <label for="cohesion">Cohesion</label>
-        <input type="text" name="cohesion" id="cohesion" />
-        
-        <label for="alignment">Alignment</label>
-        <input type="text" name="alignment" id="alignment" />
-        
-        <label for="avoidance">Avoidance</label>
-        <input type="text" name="avoidance" id="avoidance" />
-        
-        <label for="visibility">Visibility</label>
-        <input type="text" name="visibility" id="visibility" />
-        
-        <br /><button id="go-stop">Go</button>
+    <div id="sidebar">
+        <h1>Canvas Boids</h1>
+        <div id="controls">
+            <label for="number-boids">Number of Boids</label>
+            <input title="This is the number of little dots that will 
+              participate in the simulation. Note: setting this 
+              number too high can slow things to a crawl."
+               type="text" name="number-boids" id="number-boids" />
+            
+            <label for="separation">Separation</label>
+            <input 
+                title="How hard the boids try not to hit one another." 
+                type="text" name="separation" id="separation" />
+            
+            <label for="separation-dist">Separation Distance</label>
+            <input title="The distance the boids try to maintain 
+               from one another."
+                type="text" name="separation-dist" id="separation-dist" />
+            
+            <label for="cohesion">Cohesion</label>
+            <input title="How hard the boids try to group together." 
+                type="text" name="cohesion" id="cohesion" />
+            
+            <label for="alignment">Alignment</label>
+            <input title="How conformist the boids are, moving in the 
+               same direction."
+                type="text" name="alignment" id="alignment" />
+            
+            <label for="avoidance">Avoidance</label>
+            <input title="How hard the boids try to stay within 
+               the window."
+                type="text" name="avoidance" id="avoidance" />
+            
+            <label for="visibility">Visibility</label>
+            <input title="How far the boids can 'see' around them."
+                type="text" name="visibility" id="visibility" />
+            
+            <br /><button id="go-stop">Go</button>
+        </div>
+        <p><small>Canvas Boids is based on a project by Andrew Mertz, detailed
+        <a href="http://castle.eiu.edu/mathcs/ICTM2011.pdf">here</a>.
+        </small></p>
     </div>
     
     <div id="display">
         <canvas id="canvas" width="600" height="300"></canvas>
     </div>
-    
-    <h2>Parameters</h2>
-    <p>Experiment with the controls to create different simulation 
-    results.</p>
-    <dl>
-        <dt>Number of Boids</dt>
-        <dd>This is the number of little dots that will participate in the 
-        simulation. <strong>Note:</strong> setting this number too 
-        high can slow things to a crawl.</dd>
-        <dt>Separation</dt>
-        <dd>How hard the boids try not to hit one another.</dd>
-        <dt>Separation Distance</dt>
-        <dd>The distance the boids try to maintain from one another.</dd>
-        <dt>Cohesion</dt>
-        <dd>How hard the boids try to group together.</dd>
-        <dt>Alignment</dt>
-        <dd>How conformist the boids are, moving in the same direction.</dd>
-        <dt>Avoidance</dt>
-        <dd>How hard the boids try to stay within the window.</dd>
-        <dt>Visibility</dt>
-        <dd>How far the boids can "see" around them.</dd>
-    </dl>
 </body>
 </html>

@@ -1,9 +1,9 @@
 BOID_RADIUS = 3;
 SHOW_BOID_HEADING = false;
 BOID_COUNT = 150;
-MAX_SPEED = 10;
+MAX_SPEED = 15;
 RUNNING = false;
-ADJUSTMENT_MULTIPLIER = 0.1;
+ADJUSTMENT_MULTIPLIER = 0.05;
 
 SEPARATION = 1.0;
 SEPARATION_DISTANCE = 15;
@@ -297,7 +297,7 @@ function run(canvasID) {
     canvas = document.getElementById(canvasID);
     ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = 'rgb(248,234,28)';
+    ctx.fillStyle = 'rgb(190,245,127)';
     ctx.translate(0, canvas.height);
     ctx.scale(1, -1);
     
