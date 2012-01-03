@@ -23,10 +23,10 @@ label {
 }
 #controls input {
     background: none;
-    border: 2px solid #fff;;
+    border: 2px solid #fff;
     color: #fff;
     font-weight: bold;
-    padding: 4px;
+    padding: 4px 6px;
 }
 #controls button {
     background: none;
@@ -37,20 +37,15 @@ label {
     padding: 8px 16px;
 }
 .tooltipsy {
-    background: #DBD646;
-    margin-left: 6px;
-    padding: 8px 12px;
-}
-#display {
-    display: inline;
-    margin: 0;
-    padding: 0;
-    line-height: 0;
-}
-#display canvas {
-    margin: 0;
-    padding: 0;
-    line-height: 0;
+    background-color: #DBD646;
+    border: 2px solid #fff;
+    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, .5);
+    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, .5);
+    box-shadow: 0 0 10px rgba(0, 0, 0, .5);
+    color: #303030;
+    max-width: 200px;
+    padding: 16px;
+    text-shadow: none;
 }
 
 

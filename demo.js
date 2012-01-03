@@ -9,7 +9,7 @@ $(function() {
     
     $('#controls input')
     .tooltipsy({
-        offset: [1,0],
+        offset: [16,0],
         showEvent: 'focus',
         hideEvent: 'blur'
     });
