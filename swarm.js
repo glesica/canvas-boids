@@ -34,6 +34,9 @@ function Vector(d, m) {
     // If `d` is outside [0, 2PI), bring it back into the correct range.
     this.direction = d % (2 * Math.PI);
     this.magnitude = m;
+    // Precompute cartesian coords to speed shit up
+    this.x = Math.cos(this.direction) * this.magnitude;
+    this.y = Math.sin(this.direction) * this.magnitude;
 };
 // Factory that returns a vector using the given x and y coordinates.
 Vector.fromCartesian = function(pt) {
@@ -58,10 +61,14 @@ Vector.fromCartesian = function(pt) {
 };
 // Returns the vector represented as cartesian coordinates: {x:_, y:_}.
 Vector.prototype.asCartesian = function() {
+    //return {
+    //    x: Math.cos(this.direction) * this.magnitude,
+    //    y: Math.sin(this.direction) * this.magnitude
+    //};
     return {
-        x: Math.cos(this.direction) * this.magnitude,
-        y: Math.sin(this.direction) * this.magnitude
-    };
+        x: this.x,
+        y: this.y
+    }
 };
 // Returns a copy of the vector.
 Vector.prototype.copyOf = function() {
@@ -138,10 +145,12 @@ Boid.randomBoid = function(mx, my, mhm) {
     );
     return new Boid(position, heading);
 };
-// Draws the boid on the given graphics context.
-Boid.prototype.draw = function() {
+// Updates the boid position and allows output. This version 
+// outputs the boid to the given canvas context.
+Boid.prototype.draw = function(ctx) {
     var pt = this.position.asCartesian();
     var tar = this.position.addVector(this.heading.scaledBy(5)).asCartesian();
+
     // Draw the direction vector
     if (SHOW_BOID_HEADING === true) {
         ctx.beginPath();
@@ -156,7 +165,7 @@ Boid.prototype.draw = function() {
     ctx.fill();
 }
 // Apply adjustments to heading then merge heading into position.
-Boid.prototype.flip = function() {
+Boid.prototype.update = function() {
     if (this.adjustments.length > 0) {
         var adjVector = this.adjustments.reduce(function(prev, next) {
             return prev.addVector(next);
@@ -168,48 +177,39 @@ Boid.prototype.flip = function() {
     
     // TODO: We mutate the heading vector here, maybe not a good idea...
     if (this.heading.magnitude > MAX_SPEED) {
-        this.heading.magnitude = MAX_SPEED;
+        this.heading = new Vector(
+            this.heading.direction,
+            MAX_SPEED
+        );
     }
     this.position = this.position.addVector(this.heading);
 };
 // Adds an adjustment vector.
-Boid.prototype.adjustHeading = function(vec) {
+Boid.prototype.adjust = function(vec) {
     // Limit magnitude of adjustment vectors to avoid crazy course changes
     // TODO: Shouldn't mutate vectors
     if (vec.magnitude > MAX_SPEED) {
-        vec.magnitude = MAX_SPEED * ADJUSTMENT_MULTIPLIER;
+        vec = new Vector(
+            vec.direction,
+            MAX_SPEED * ADJUSTMENT_MULTIPLIER
+        );
     }
     this.adjustments.push(vec.copyOf());
 };
 
 
-function Swarm(n) {
+function Swarm(n, mx, my) {
     this.size = n;
-    this.width = canvas.width;
-    this.height = canvas.height;
+    this.width = mx;
+    this.height = my;
     
     this.boids = [];
     for (var i=0; i<n; i++) {
         this.boids.push(Boid.randomBoid(this.width, this.height, MAX_SPEED));
     }
 };
-Swarm.prototype.run = function() {
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    this.drawAll();
-    this.advance();
-    this.flipAll();
-};
-Swarm.prototype.drawAll = function() {
-    for (var i=0; i<this.boids.length; i++) {
-        this.boids[i].draw();
-    }
-};
-Swarm.prototype.flipAll = function() {
-    this.boids.forEach(function(boid) {
-        boid.flip();
-    });
-};
 Swarm.prototype.advance = function() {
+    // Adjust boid headings
     for (i in this.boids) {
         var boid = this.boids[i];
         
@@ -229,7 +229,7 @@ Swarm.prototype.advance = function() {
                     y: prev.y + (pt.y / visible.length)
                 };
             }, {x: null, y: null});
-            boid.adjustHeading(
+            boid.adjust(
                 boid.position.vectorTo(cohAvgPos)
                 .scaledBy(COHESION)
             );
@@ -240,7 +240,7 @@ Swarm.prototype.advance = function() {
             var alignAvgVector = visible.reduce(function(prev, next) {
                 return prev.addVector(next.heading);
             }, new Vector(0, 0));
-            boid.adjustHeading(
+            boid.adjust(
                 alignAvgVector
                 .scaledBy(ALIGNMENT)
             );
@@ -260,7 +260,7 @@ Swarm.prototype.advance = function() {
                     y: prev.y + (pt.y / tooClose.length)
                 };
             }, {x: null, y: null});
-            boid.adjustHeading(
+            boid.adjust(
                 boid.position.vectorTo(sepAvgPos)
                 .scaledBy(-1)
                 .scaledBy(SEPARATION)
@@ -271,7 +271,7 @@ Swarm.prototype.advance = function() {
         var boidPt = boid.position.asCartesian();
         
         if (boidPt.x < VISIBILITY || boidPt.x > (this.width - VISIBILITY)) {
-            boid.adjustHeading(
+            boid.adjust(
                 boid.position.vectorTo(Vector.fromCartesian({
                     x: this.width / 2,
                     y: boidPt.y
@@ -281,7 +281,7 @@ Swarm.prototype.advance = function() {
         }
         
         if (boidPt.y < VISIBILITY || boidPt.y > (this.height - VISIBILITY)) {
-            boid.adjustHeading(
+            boid.adjust(
                 boid.position.vectorTo(Vector.fromCartesian({
                     x: boidPt.x,
                     y: this.height / 2
@@ -290,31 +290,55 @@ Swarm.prototype.advance = function() {
             );
         }
     }
+    // Update boid positions now that they are all adjusted.
+    for (var i in this.boids) {
+        this.boids[i].update();
+    };
 };
 
 
 function run(canvasID) {
-    canvas = document.getElementById(canvasID);
-    ctx = canvas.getContext('2d');
+    var canvas = document.getElementById(canvasID);
+    var ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = 'rgb(190,245,127)';
     ctx.translate(0, canvas.height);
     ctx.scale(1, -1);
     
-    var swarm = new Swarm(BOID_COUNT);
+    var swarm = new Swarm(BOID_COUNT, canvas.width, canvas.height);
     
+    var startTime = undefined;
     window.requestAnimFrame = (function() {
         return window.requestAnimationFrame || 
-                window.webkitRequestAnimationFrame || 
-                window.mozRequestAnimationFrame || 
-                window.oRequestAnimationFrame || 
-                window.msRequestAnimationFrame || 
-                function(callback, element) {
+               window.webkitRequestAnimationFrame || 
+               window.mozRequestAnimationFrame || 
+               window.oRequestAnimationFrame || 
+               window.msRequestAnimationFrame || 
+               function(callback, element) {
                     window.setTimeout(callback, 1000 / 60);
                 };
     })();
 
-    var startTime = undefined;
+    // Updates the boid position and allows output. This version 
+    // outputs the boid to the given canvas context.
+    function drawBoid(boid) {
+        var pt = boid.position.asCartesian();
+        var tar = boid.position.addVector(boid.heading.scaledBy(5)).asCartesian();
+
+        // Draw the direction vector
+        if (SHOW_BOID_HEADING === true) {
+            ctx.beginPath();
+            ctx.moveTo(pt.x, pt.y);
+            ctx.lineTo(tar.x, tar.y);
+            ctx.stroke();
+        }
+
+        // Draw the dot
+        ctx.beginPath();
+        ctx.arc(pt.x, pt.y, BOID_RADIUS, 0, Math.PI*2);
+        ctx.fill();
+    };
+
     
     function animate(time) {
         if (time === undefined) {
@@ -323,7 +347,11 @@ function run(canvasID) {
         if (startTime === undefined) {
             startTime = time;
         }
-        swarm.run();
+        swarm.advance();
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (var i in swarm.boids) {
+            swarm.boids[i].draw(ctx);
+        }
     };
     
     function stop() {
